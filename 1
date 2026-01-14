@@ -1,0 +1,11 @@
+#! /bin/bash
+
+cat /etc/hosts | while read ip name alias; do
+	real_ip=$(nslookup "$name" 1.1.1.1)
+
+
+	if [ "$ip" != "$realip" ]; then
+		echo "Bogus ip for $name in /etc/hosts!"
+	fi
+done
+	
