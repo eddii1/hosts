@@ -1,11 +1,20 @@
 #! /bin/bash
 
-cat /etc/hosts | while read ip name alias; do
-	real_ip=$(nslookup "$name" 1.1.1.1)
+verifica_ip() {
+    local host=$1
+    local ip_hosts=$2
+    local dns_srv=$3
+
+    local real_ip=$(nslookup "$host" "$dns_srv" | grep -A 1 "nume:" | grep "adresa:" | awk '{print $2}')
+
+    if [ -n "$real_ip" ] && [ "$ip_hosts" != "$real_ip" ]; then
+        echo "Bogus ip for $host in /etc/hosts!"
+    fi
+}
+
+grep -v '^#' /etc/hosts | grep -v '^$' | while read -r ip name alias; do
+    verifică_ip "$name" "$ip" "1.1.1.1"
 
 
-	if [ "$ip" != "$realip" ]; then
-		echo "Bogus ip for $name in /etc/hosts!"
-	fi
-done
-	
+    
+done	
